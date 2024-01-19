@@ -1,5 +1,22 @@
 // AccessControlUpgradeable (U-RBAC) Core Tests
 
+// Zeppelin test helpers
+const {
+	BN,
+	constants,
+	expectEvent,
+	expectRevert,
+} = require("@openzeppelin/test-helpers");
+const {
+	assert,
+	expect,
+} = require("chai");
+const {
+	ZERO_ADDRESS,
+	ZERO_BYTES32,
+	MAX_UINT256,
+} = constants;
+
 // import the core RBAC behaviour to use
 const {
 	behavesLikeRBAC,
@@ -7,21 +24,23 @@ const {
 
 // deployment routines in use
 const {
-	deploy_upgradeable_ac,
+	deploy_upgradeable_ac_impl,
 	deploy_erc1967_upgradeable_ac,
 } = require("./include/deployment_routines");
 
 // RBAC proxy instance un-wrapper
-async function deploy_access_control(a0) {
-	const {proxy} = await deploy_erc1967_upgradeable_ac(a0);
+async function deploy_access_control(a0, owner = a0, features = new BN(0)) {
+	const {proxy} = await deploy_erc1967_upgradeable_ac(a0, owner, features);
 	return proxy;
 }
 
 // RBAC proxy instance un-wrapper
-async function deploy_access_control_v2(a0) {
-	const {proxy} = await deploy_erc1967_upgradeable_ac(a0);
-	const v2 = await deploy_upgradeable_ac(a0, 2);
-	await proxy.upgradeTo(v2.address, {from: a0});
+async function deploy_access_control_v2(a0, owner = a0, features = new BN(0)) {
+	const {proxy} = await deploy_erc1967_upgradeable_ac(a0, owner, features);
+	if(owner !== ZERO_ADDRESS) {
+		const v2 = await deploy_upgradeable_ac_impl(a0, 2);
+		await proxy.upgradeTo(v2.address, {from: owner});
+	}
 	return proxy;
 }
 

@@ -25,7 +25,7 @@ const {
 
 // deployment routines in use
 const {
-	deploy_upgradeable_ac,
+	deploy_upgradeable_ac_impl,
 	deploy_erc1967_upgradeable_ac,
 } = require("./include/deployment_routines");
 
@@ -52,12 +52,12 @@ contract("UpgradeableAccessControl (U-RBAC) Core tests", function(accounts) {
 		expect(await ac.getInitializedVersion()).to.be.bignumber.that.equals("1");
 	});
 	it("it is impossible to re-initialize", async function() {
-		await expectRevert(ac.postConstruct({from: a0}), "Initializable: contract is already initialized");
+		await expectRevert(ac.postConstruct(ZERO_ADDRESS, 0, {from: a0}), "Initializable: contract is already initialized");
 	});
 	describe("when there is new (v2) implementation available", function() {
 		let impl2;
 		beforeEach(async function() {
-			impl2 = await deploy_upgradeable_ac(a0, 2);
+			impl2 = await deploy_upgradeable_ac_impl(a0, 2);
 		});
 		describe("when performed by UPGRADE_MANAGER", function() {
 			beforeEach(async function() {
@@ -65,7 +65,7 @@ contract("UpgradeableAccessControl (U-RBAC) Core tests", function(accounts) {
 			});
 			it("implementation upgrade with initialization fails (already initialized)", async function() {
 				// prepare the initialization call bytes
-				const init_data = ac.contract.methods.postConstruct().encodeABI();
+				const init_data = ac.contract.methods.postConstruct(ZERO_ADDRESS, 0).encodeABI();
 
 				// and upgrade the implementation
 				await expectRevert(
@@ -86,7 +86,7 @@ contract("UpgradeableAccessControl (U-RBAC) Core tests", function(accounts) {
 				});
 			});
 			it("direct initialization of the implementation (bypassing proxy) fails", async function() {
-				await expectRevert(impl1.postConstruct({from: by}), "Initializable: contract is already initialized");
+				await expectRevert(impl1.postConstruct(ZERO_ADDRESS, 0, {from: by}), "Initializable: contract is already initialized");
 			});
 			it("direct upgrade of the implementation (bypassing proxy) fails", async function() {
 				await expectRevert(impl1.upgradeTo(impl2.address, {from: by}), "Function must be called through delegatecall");
@@ -98,7 +98,7 @@ contract("UpgradeableAccessControl (U-RBAC) Core tests", function(accounts) {
 			});
 			it("implementation upgrade with initialization fails (already initialized)", async function() {
 				// prepare the initialization call bytes
-				const init_data = ac.contract.methods.postConstruct().encodeABI();
+				const init_data = ac.contract.methods.postConstruct(ZERO_ADDRESS, 0).encodeABI();
 
 				// and upgrade the implementation
 				await expectRevert(
@@ -110,7 +110,7 @@ contract("UpgradeableAccessControl (U-RBAC) Core tests", function(accounts) {
 				await expectRevert(ac.upgradeTo(impl2.address, {from: by}), "access denied");
 			});
 			it("direct initialization of the implementation (bypassing proxy) fails", async function() {
-				await expectRevert(impl1.postConstruct({from: by}), "Initializable: contract is already initialized");
+				await expectRevert(impl1.postConstruct(ZERO_ADDRESS, 0, {from: by}), "Initializable: contract is already initialized");
 			});
 			it("direct upgrade of the implementation (bypassing proxy) fails", async function() {
 				await expectRevert(impl1.upgradeTo(impl2.address, {from: by}), "Function must be called through delegatecall");

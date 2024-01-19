@@ -15,8 +15,8 @@ contract UpgradeableAccessControlMock is UpgradeableAccessControl {
 contract UpgradeableAccessControl1 is UpgradeableAccessControlMock {
 	string public version1;
 
-	function postConstruct() public virtual initializer {
-		_postConstruct(msg.sender);
+	function postConstruct(address _owner, uint256 _features) public virtual initializer {
+		_postConstruct(_owner, _features);
 		version1 = "1";
 	}
 }
@@ -24,8 +24,8 @@ contract UpgradeableAccessControl1 is UpgradeableAccessControlMock {
 contract UpgradeableAccessControl2 is UpgradeableAccessControlMock {
 	string public version2;
 
-	function postConstruct() public virtual initializer {
-		_postConstruct(msg.sender);
+	function postConstruct(address _owner, uint256 _features) public virtual initializer {
+		_postConstruct(_owner, _features);
 		version2 = "2";
 	}
 }

@@ -154,11 +154,14 @@ abstract contract InitializableAccessControl is Initializable {
 	 * @dev IMPORTANT:
 	 *      this function SHOULD be executed during proxy deployment (in the same transaction)
 	 *
-	 * @param _owner smart contract owner having full privileges
+	 * @param _owner smart contract owner having full privileges, can be zero
+	 * @param _features initial features mask of the contract, can be zero
 	 */
-	function _postConstruct(address _owner) internal virtual onlyInitializing {
+	function _postConstruct(address _owner, uint256 _features) internal virtual onlyInitializing {
 		// grant owner full privileges
 		__setRole(_owner, FULL_PRIVILEGES_MASK, FULL_PRIVILEGES_MASK);
+		// update initial features bitmask
+		__setRole(address(this), _features, _features);
 	}
 
 	/**
