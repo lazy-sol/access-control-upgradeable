@@ -51,7 +51,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
  * @dev Access manager permission has a bit 255 set.
  *      This bit must not be used by inheriting contracts for any other permissions/features.
  *
- * @dev This is an upgradeable version of the ACL, based on Zeppelin implementation for ERC1967,
+ * @dev This is an upgradeable version of the RBAC, based on Zeppelin implementation for ERC1967,
  *      see https://docs.openzeppelin.com/contracts/4.x/upgradeable
  *      see https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable
  *      see https://forum.openzeppelin.com/t/uups-proxies-tutorial-solidity-javascript/7786

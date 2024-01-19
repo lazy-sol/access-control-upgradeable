@@ -136,7 +136,7 @@ abstract contract InitializableAccessControl is Initializable {
 	}
 
 	/**
-	 * @dev Creates/deploys the ACL implementation to be used in a proxy
+	 * @dev Creates/deploys the RBAC implementation to be used in a proxy
 	 *
 	 * @dev Note:
 	 *      the implementation is already initialized and
@@ -156,7 +156,7 @@ abstract contract InitializableAccessControl is Initializable {
 	 *
 	 * @param _owner smart contract owner having full privileges
 	 */
-	function _postConstruct(address _owner) internal virtual initializer {
+	function _postConstruct(address _owner) internal virtual onlyInitializing {
 		// grant owner full privileges
 		__setRole(_owner, FULL_PRIVILEGES_MASK, FULL_PRIVILEGES_MASK);
 	}

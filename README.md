@@ -15,4 +15,4 @@ npm i -D @lazy-sol/access-control-upgradeable
 ## Further Reading
 See RBAC [README.md](https://github.com/lazy-sol/access-control/blob/master/README.md)
 
-(c) 2017–2023 Basil Gorin
+(c) 2017–2024 Basil Gorin
