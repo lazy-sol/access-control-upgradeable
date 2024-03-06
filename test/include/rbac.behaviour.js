@@ -19,7 +19,7 @@ const {
 const {
 	random_bn255,
 	random_bn256,
-} = require("./bn_utils");
+} = require("@lazy-sol/a-missing-gem/bn_utils");
 
 // RBAC core features and roles
 const {

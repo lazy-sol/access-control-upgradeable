@@ -14,9 +14,9 @@ require("solidity-coverage");
 // https://hardhat.org/plugins/hardhat-gas-reporter.html
 require("hardhat-gas-reporter");
 
-// compile Solidity sources directly from NPM dependencies
-// https://github.com/ItsNickBarry/hardhat-dependency-compiler
-require("hardhat-dependency-compiler");
+// copy compiled Solidity bytecode directly from the NPM dependencies.
+// https://github.com/vgorin/hardhat-dependency-injector
+require("hardhat-dependency-injector");
 
 /**
  * @type import('hardhat/config').HardhatUserConfig
@@ -71,12 +71,12 @@ module.exports = {
 		enabled: !!(process.env.REPORT_GAS)
 	},
 
-	// compile Solidity sources directly from NPM dependencies
-	// https://github.com/ItsNickBarry/hardhat-dependency-compiler
-	dependencyCompiler: {
+	// copy compiled Solidity bytecode directly from NPM dependencies
+	// https://github.com/vgorin/hardhat-dependency-injector
+	dependencyInjector: {
 		paths: [
 			// ERC1967 is used to deploy upgradeable contracts
-			"@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol",
+			"@openzeppelin/contracts/build/contracts/ERC1967Proxy.json",
 		],
 	},
 }
