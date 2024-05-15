@@ -21,7 +21,7 @@ const {
 const {
 	not,
 	ROLE_UPGRADE_MANAGER,
-} = require("./include/features_roles");
+} = require("../scripts/include/features_roles");
 
 // deployment routines in use
 const {
