@@ -22,6 +22,9 @@ build/
 cache/
 artifacts/
 
+# typechain
+typechain
+
 # etc
 *.log
 keys.js

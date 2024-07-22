@@ -18,6 +18,13 @@ require("hardhat-gas-reporter");
 // https://github.com/vgorin/hardhat-dependency-injector
 require("hardhat-dependency-injector");
 
+// automatically generate TypeScript bindings for smart contracts while using Hardhat
+// TypeScript bindings help IDEs to properly recognize compiled contracts' ABIs
+// https://github.com/dethcrypto/TypeChain/tree/master/packages/hardhat
+// npm install -D typechain @typechain/hardhat @typechain/truffle-v5
+// run: npx hardhat typechain
+// require("@typechain/hardhat");
+
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -52,6 +59,12 @@ module.exports = {
 				}
 			},
 		]
+	},
+
+	// configure typechain to generate Truffle v5 bindings
+	typechain: {
+		outDir: "typechain",
+		target: "truffle-v5",
 	},
 
 	// Set default mocha options here, use special reporters etc.

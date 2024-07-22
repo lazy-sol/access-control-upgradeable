@@ -4,7 +4,7 @@ pragma solidity ^0.8.2;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 /**
- * @title Initializable Role-based Access Control (RBAC) // ERC1967Proxy
+ * @title Initializable Role-based Access Control (RBAC)
  *
  * @notice Access control smart contract provides an API to check
  *      if a specific operation is permitted globally and/or
@@ -51,12 +51,12 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
  *      This bit must not be used by inheriting contracts for any other permissions/features.
  *
  * @dev This is an initializable version of the RBAC, based on Zeppelin implementation,
- *      it can be used for ERC1967 proxies, as well as for EIP-1167 minimal proxies
+ *      it can be used for EIP-1167 minimal proxies, for ERC1967 proxies, etc.
+ *      see https://docs.openzeppelin.com/contracts/4.x/api/proxy#Clones
  *      see https://docs.openzeppelin.com/contracts/4.x/upgradeable
  *      see https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable
  *      see https://forum.openzeppelin.com/t/uups-proxies-tutorial-solidity-javascript/7786
  *      see https://eips.ethereum.org/EIPS/eip-1167
- *      see https://docs.openzeppelin.com/contracts/4.x/api/proxy#Clones
  *
  * @author Basil Gorin
  */
@@ -109,7 +109,7 @@ abstract contract InitializableAccessControl is Initializable {
 	 * @dev Bitmask representing all the possible permissions (super admin role)
 	 * @dev Has all the bits are enabled (2^256 - 1 value)
 	 */
-	uint256 private constant FULL_PRIVILEGES_MASK = type(uint256).max; // before 0.8.0: uint256(-1) overflows to 0xFFFF...
+	uint256 internal constant FULL_PRIVILEGES_MASK = type(uint256).max; // before 0.8.0: uint256(-1) overflows to 0xFFFF...
 
 	/**
 	 * @dev Fired in updateRole() and updateFeatures()
