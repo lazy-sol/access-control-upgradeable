@@ -1,6 +1,6 @@
 {
   "name": "@lazy-sol/access-control-upgradeable",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Enable the modular plug and play (PnP) architecture for your dapp by incorporating the role-based access control (RBAC) into the smart contracts",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "deploy": "hardhat deploy"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
   },
   "keywords": [
     "RBAC",
@@ -25,12 +25,11 @@
     "@lazy-sol/a-missing-gem": "^1.0.9",
     "@nomiclabs/hardhat-truffle5": "^2.0.7",
     "@openzeppelin/contracts-upgradeable": "^4.9.6",
-    "audit": "^0.0.6",
-    "hardhat": "^2.22.6",
+    "hardhat": "^2.22.7",
     "hardhat-deploy": "^0.11.45"
   },
   "devDependencies": {
-    "@lazy-sol/zeppelin-test-helpers": "^1.0.1",
+    "@lazy-sol/zeppelin-test-helpers": "^1.0.5",
     "@openzeppelin/contracts": "^4.9.6",
     "hardhat-dependency-injector": "^1.0.1",
     "hardhat-gas-reporter": "^1.0.10",
@@ -38,6 +37,7 @@
   },
   "overrides": {
     "tough-cookie": "^4.1.3",
-    "yargs-parser": "^5.0.1"
+    "yargs-parser": "^5.0.1",
+    "ws": "^8.0.0"
   }
 }
