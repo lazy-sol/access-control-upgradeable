@@ -44,7 +44,7 @@ contract('AccessControlUpgradeable (U-RBAC) "restrictedTo" Modifier tests', func
 			access_control = await deploy_access_control(a0);
 		});
 		it("function protected with restrictedTo modifier fails when run not by an admin", async function() {
-			await expectRevert(access_control.restricted({from: a1}), "access denied");
+			await expectRevert(access_control.restricted({from: a1}), "AccessDenied()");
 		});
 		describe("function protected with restrictedTo modifier succeeds when run by admin", async function() {
 			let receipt;

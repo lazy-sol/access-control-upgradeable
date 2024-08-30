@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.2;
+pragma solidity >=0.8.4;
 
 import "../UpgradeableAccessControl.sol";
 
@@ -9,6 +9,12 @@ contract UpgradeableAccessControlMock is UpgradeableAccessControl {
 	event Restricted();
 	function restricted() public restrictedTo(RESTRICTED_ROLE) {
 		emit Restricted();
+	}
+	function requireSenderInRole(uint256 required) public view {
+		_requireSenderInRole(required);
+	}
+	function requireAccessCondition(bool condition) public pure {
+		_requireAccessCondition(condition);
 	}
 }
 

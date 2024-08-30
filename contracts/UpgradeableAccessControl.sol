@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.2;
+pragma solidity >=0.8.4;
 
 import "./InitializableAccessControl.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "./UpgradeableAccessControlCore.sol";
 
 /**
- * @title Upgradeable Role-based Access Control (RBAC) // ERC1967Proxy
+ * @title Upgradeable Role-based Access Control (U-RBAC) // ERC1967Proxy
  *
  * @notice Access control smart contract provides an API to check
  *      if a specific operation is permitted globally and/or
@@ -58,23 +58,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
  *
  * @author Basil Gorin
  */
-abstract contract UpgradeableAccessControl is InitializableAccessControl, UUPSUpgradeable {
-	/**
-	 * @notice Returns an address of the implementation smart contract,
-	 *      see ERC1967Upgrade._getImplementation()
-	 *
-	 * @return the current implementation address
-	 */
-	function getImplementation() public view virtual returns (address) {
-		// delegate to `ERC1967Upgrade._getImplementation()`
-		return _getImplementation();
-	}
-
-	/**
-	 * @inheritdoc UUPSUpgradeable
-	 */
-	function _authorizeUpgrade(address) internal virtual override {
-		// caller must have a permission to upgrade the contract
-		require(isSenderInRole(ROLE_UPGRADE_MANAGER), "access denied");
-	}
+abstract contract UpgradeableAccessControl is InitializableAccessControl, UpgradeableAccessControlCore {
+	
 }

@@ -101,13 +101,10 @@ contract("UpgradeableAccessControl (U-RBAC) Core tests", function(accounts) {
 				const init_data = ac.contract.methods.postConstruct(ZERO_ADDRESS, 0).encodeABI();
 
 				// and upgrade the implementation
-				await expectRevert(
-					ac.upgradeToAndCall(impl2.address, init_data, {from: by}),
-					"access denied"
-				);
+				await expectRevert(ac.upgradeToAndCall(impl2.address, init_data, {from: by}), "AccessDenied()");
 			});
 			it("implementation upgrade without initialization reverts", async function() {
-				await expectRevert(ac.upgradeTo(impl2.address, {from: by}), "access denied");
+				await expectRevert(ac.upgradeTo(impl2.address, {from: by}), "AccessDenied()");
 			});
 			it("direct initialization of the implementation (bypassing proxy) fails", async function() {
 				await expectRevert(impl1.postConstruct(ZERO_ADDRESS, 0, {from: by}), "Initializable: contract is already initialized");

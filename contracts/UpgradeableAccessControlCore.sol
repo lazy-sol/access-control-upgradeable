@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.4; // custom errors (0.8.4)
+pragma solidity >=0.8.4;
 
 import "./InitializableAccessControlCore.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
- * @title Initializable Role-based Access Control (I-RBAC)
+ * @title Upgradeable Role-based Access Control Core (U-RBAC-C) // ERC1967Proxy
  *
  * @notice Access control smart contract provides an API to check
  *      if a specific operation is permitted globally and/or
@@ -50,48 +51,38 @@ import "./InitializableAccessControlCore.sol";
  * @dev Access manager permission has a bit 255 set.
  *      This bit must not be used by inheriting contracts for any other permissions/features.
  *
- * @dev This is an initializable version of the RBAC, based on Zeppelin implementation,
- *      it can be used for EIP-1167 minimal proxies, for ERC1967 proxies, etc.
- *      see https://docs.openzeppelin.com/contracts/4.x/api/proxy#Clones
+ * @dev This is an upgradeable version of the RBAC, based on Zeppelin implementation for ERC1967,
  *      see https://docs.openzeppelin.com/contracts/4.x/upgradeable
  *      see https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable
  *      see https://forum.openzeppelin.com/t/uups-proxies-tutorial-solidity-javascript/7786
- *      see https://eips.ethereum.org/EIPS/eip-1167
+ *
+ * @dev The 'core' version of the RBAC contract hides three rarely used external functions from the public ABI,
+ *      making them internal and thus reducing the overall compiled implementation size.
+ *      isFeatureEnabled() public -> _isFeatureEnabled() internal
+ *      isSenderInRole() public -> _isSenderInRole() internal
+ *      isOperatorInRole() public -> _isOperatorInRole() internal
+ *
+ * @custom:since 1.1.0
  *
  * @author Basil Gorin
  */
-abstract contract InitializableAccessControl is InitializableAccessControlCore {
+abstract contract UpgradeableAccessControlCore is InitializableAccessControlCore, UUPSUpgradeable {
 	/**
-	 * @notice Checks if requested set of features is enabled globally on the contract
+	 * @notice Returns an address of the implementation smart contract,
+	 *      see ERC1967Upgrade._getImplementation()
 	 *
-	 * @param required set of features to check against
-	 * @return true if all the features requested are enabled, false otherwise
+	 * @return the current implementation address
 	 */
-	function isFeatureEnabled(uint256 required) public view returns (bool) {
-		// delegate to internal `_isFeatureEnabled`
-		return _isFeatureEnabled(required);
+	function getImplementation() public view virtual returns (address) {
+		// delegate to `ERC1967Upgrade._getImplementation()`
+		return _getImplementation();
 	}
 
 	/**
-	 * @notice Checks if transaction sender `msg.sender` has all the permissions required
-	 *
-	 * @param required set of permissions (role) to check against
-	 * @return true if all the permissions requested are enabled, false otherwise
+	 * @inheritdoc UUPSUpgradeable
 	 */
-	function isSenderInRole(uint256 required) public view returns (bool) {
-		// delegate to internal `_isSenderInRole`
-		return _isSenderInRole(required);
-	}
-
-	/**
-	 * @notice Checks if operator has all the permissions (role) required
-	 *
-	 * @param operator address of the user to check role for
-	 * @param required set of permissions (role) to check
-	 * @return true if all the permissions requested are enabled, false otherwise
-	 */
-	function isOperatorInRole(address operator, uint256 required) public view returns (bool) {
-		// delegate to internal `_isOperatorInRole`
-		return _isOperatorInRole(operator, required);
+	function _authorizeUpgrade(address) internal virtual override {
+		// caller must have a permission to upgrade the contract
+		_requireSenderInRole(ROLE_UPGRADE_MANAGER);
 	}
 }
