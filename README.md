@@ -68,7 +68,7 @@ features and roles. Usually, smart contracts use different values for all the fe
 next section).
 
 Access manager may revoke its own permissions, including the bit 255. Eventually that allows an access manager to let
-the smart contract “float freely” and be controlled only by the community (via DAO) or by no one at all.
+the smart contract “float freely” and be controlled only by the community (via the DAO) or by no one at all.
 
 ## Comparing with OpenZeppelin
 
@@ -76,7 +76,7 @@ Both our and OpenZeppelin Access Control implementations feature a similar API t
 thing".
 
 Zeppelin implementation is more flexible:
-* it allows setting unlimited number of roles, while current is limited to 256 different roles
+* it allows setting an unlimited number of roles, while current is limited to 256 different roles
 * it allows setting an admin for each role, while current allows having only one global admin
 
 Our implementation is more lightweight:
@@ -120,11 +120,11 @@ npm i -D @lazy-sol/access-control-upgradeable
 Restricted function is a function with a `public` Solidity modifier access to which is restricted
 so that only a pre-configured set of accounts can execute it.
 
-1. Enable role-based access control (RBAC) in a new smart contract
-   by inheriting the RBAC contract from the [AccessControl](./contracts/UpgradeableAccessControl.sol) contract:
+1.  Enable role-based access control (RBAC) in a new smart contract
+    by inheriting the RBAC contract from the [UpgradeableAccessControlCore](./contracts/UpgradeableAccessControlCore.sol) contract:
     ```solidity
     import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-    import "@lazy-sol/access-control/contracts/UpgradeableAccessControl.sol";
+    import "@lazy-sol/access-control/contracts/UpgradeableAccessControlCore.sol";
     
     /**
      * @title Simple ERC20 Implementation (Upgreadable)
@@ -133,29 +133,29 @@ so that only a pre-configured set of accounts can execute it.
      *
      * @author Lazy So[u]l
      */
-    contract MyUpgradeableERC20Token is ERC20Upgradeable, UpgradeableAccessControl {
+    contract MyUpgradeableERC20Token is ERC20Upgradeable, UpgradeableAccessControlCore {
         
         ...
         
     }
     ```
 
-2. Define an access control role with the unique integer value:
+2.  Define an access control role with the unique integer value:
     ```solidity
         ...
         
         /**
          * @notice Token creator is responsible for creating (minting)
-         tokens to an arbitrary address
+         *      tokens to an arbitrary address
          * @dev Role ROLE_TOKEN_CREATOR allows minting tokens
-         (calling `mint` function)
+         *      (calling `mint` function)
          */
         uint32 public constant ROLE_TOKEN_CREATOR = 0x0001_0000;
         
         ...
     ```
 
-3. Add the `require(isSenderInRole(ROLE_TOKEN_CREATOR), "access denied")"` check into the function body:
+3.  Add the `_requireSenderInRole(ROLE_TOKEN_CREATOR)` check into the function body:
     ```solidity
         ...
         
@@ -164,7 +164,7 @@ so that only a pre-configured set of accounts can execute it.
          */
         function _mint(address _to, uint256 _value) internal virtual override {
             // check if caller has sufficient permissions to mint tokens
-            require(isSenderInRole(ROLE_TOKEN_CREATOR), "access denied");
+            _requireSenderInRole(ROLE_TOKEN_CREATOR);
 
             // delegate to super implementation
             super._mint(_to, _value);
@@ -173,8 +173,8 @@ so that only a pre-configured set of accounts can execute it.
         ...
     ```
 
-   Note: you could also use the `restrictedTo` modifier in the function declaration instead of the `require`
-   in the function body if you don't need a custom error message:
+    Note: it is also possible to use the `restrictedTo` modifier in the function declaration instead of the `require`
+    in the function body if this better suits the coding style:
     ```solidity
         ...
         
@@ -188,6 +188,31 @@ so that only a pre-configured set of accounts can execute it.
         
         ...
     ```
+
+### Customizing the Error Message
+
+Modifier `restrictedTo()`, internal functions `_requireSenderInRole()` and `_requireAccessCondition()` throw the
+`AccessDenied` denied error when access check fails.
+
+It is also possible to use your own custom errors or string messages if needed by leveraging a lower level boolean
+functions `_isSenderInRole()` and `_isOperatorInRole()`:
+
+```solidity
+    ...
+    
+    /**
+     * @inheritdoc ERC20Upgradeable
+     */
+    function _mint(address _to, uint256 _value) internal virtual override {
+        // check if caller has sufficient permissions to mint tokens
+        require(_isSenderInRole(ROLE_TOKEN_CREATOR), "access denied");
+
+        // delegate to super implementation
+        super._mint(_to, _value);
+    }
+    
+    ...
+```
 
 Examples:
 [AdvancedERC20](https://raw.githubusercontent.com/lazy-sol/advanced-erc20/master/contracts/token/AdvancedERC20.sol),
