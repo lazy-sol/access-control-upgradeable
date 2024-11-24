@@ -1,3 +1,5 @@
+v1.1.2: do not enable full privileges to zero address on contract initialization
+
 v1.1.0: Contact Size Optimizations
 
 - __Breaking Change:__ Solidity 0.8.4 is now required to compile the contracts (previously was 0.8.2).
