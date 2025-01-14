@@ -130,11 +130,12 @@ abstract contract InitializableAccessControlCore is Initializable {
 	/**
 	 * @dev Fired in updateRole() and updateFeatures()
 	 *
+	 * @param by address which has granted/revoked permissions to operator
 	 * @param operator address which was granted/revoked permissions
 	 * @param requested permissions requested
 	 * @param assigned permissions effectively set
 	 */
-	event RoleUpdated(address indexed operator, uint256 requested, uint256 assigned);
+	event RoleUpdated(address indexed by, address indexed operator, uint256 requested, uint256 assigned);
 
 	/**
 	 * @notice Function modifier making a function defined as public behave as restricted
@@ -202,7 +203,7 @@ abstract contract InitializableAccessControlCore is Initializable {
 	 *
 	 * @return 256-bit bitmask of the features enabled
 	 */
-	function features() public view returns (uint256) {
+	function features() public view returns(uint256) {
 		// features are stored in 'this' address mapping of `userRoles`
 		return getRole(address(this));
 	}
@@ -216,9 +217,9 @@ abstract contract InitializableAccessControlCore is Initializable {
 	 *
 	 * @param _mask bitmask representing a set of features to enable/disable
 	 */
-	function updateFeatures(uint256 _mask) public {
-		// delegate call to `updateRole`
-		updateRole(address(this), _mask);
+	function updateFeatures(uint256 _mask) external {
+		// delegate to internal `_updateRole()`
+		_updateRole(address(this), _mask);
 	}
 
 	/**
@@ -243,22 +244,34 @@ abstract contract InitializableAccessControlCore is Initializable {
 	 * @notice Updates set of permissions (role) for a given user,
 	 *      taking into account sender's permissions.
 	 *
-	 * @dev Setting role to zero is equivalent to removing an all permissions
+	 * @dev Setting role to zero is equivalent to removing all the permissions
 	 * @dev Setting role to `FULL_PRIVILEGES_MASK` is equivalent to
 	 *      copying senders' permissions (role) to the user
 	 * @dev Requires transaction sender to have `ROLE_ACCESS_MANAGER` permission
+	 *
+	 * ╔════════════════════════════════════════════════════════════════════════╗
+	 * ║                WARNING: RISK OF ACCIDENTAL SELF-REVOKE                 ║
+	 * ╠════════════════════════════════════════════════════════════════════════╣
+	 * ║  updateRole function is used to add, update, delete permissions, to    ║
+	 * ║  revoke and self-revoke all the permissions, as well as to disable     ║
+	 * ║  contract upgradability by revoking ROLE_UPGRADE_MANAGER permission    ║
+	 * ║                                                                        ║
+	 * ║  updateRole(msg.sender, 0) executed by a super admin themselves        ║
+	 * ║  revokes super admin permissions forever if there is no other super    ║
+	 * ║  admin set prior to updateRole(msg.sender, 0) call                     ║
+	 * ║                                                                        ║
+	 * ║  Note that in such a case upgradeable contracts also stop being        ║
+	 * ║  upgradable as ROLE_UPGRADE_MANAGER permission is revoked              ║
+	 * ╚════════════════════════════════════════════════════════════════════════╝
 	 *
 	 * @param operator address of a user to alter permissions for,
 	 *       or self address to alter global features of the smart contract
 	 * @param role bitmask representing a set of permissions to
 	 *      enable/disable for a user specified
 	 */
-	function updateRole(address operator, uint256 role) public {
-		// caller must have a permission to update user roles
-		_requireSenderInRole(ROLE_ACCESS_MANAGER);
-
-		// evaluate the role and reassign it
-		__setRole(operator, role, _evaluateBy(msg.sender, getRole(operator), role));
+	function updateRole(address operator, uint256 role) external {
+		// delegate to internal `_updateRole()`
+		_updateRole(operator, role);
 	}
 
 	/**
@@ -371,6 +384,28 @@ abstract contract InitializableAccessControlCore is Initializable {
 	}
 
 	/**
+	 * @dev Updates set of permissions (role) for a given user,
+	 *      taking into account sender's permissions.
+	 *
+	 * @dev Setting role to zero is equivalent to removing all the permissions
+	 * @dev Setting role to `FULL_PRIVILEGES_MASK` is equivalent to
+	 *      copying senders' permissions (role) to the user
+	 * @dev Requires transaction sender to have `ROLE_ACCESS_MANAGER` permission
+	 *
+	 * @param operator address of a user to alter permissions for,
+	 *       or self address to alter global features of the smart contract
+	 * @param role bitmask representing a set of permissions to
+	 *      enable/disable for a user specified
+	 */
+	function _updateRole(address operator, uint256 role) internal {
+		// caller must have a permission to update user roles
+		_requireSenderInRole(ROLE_ACCESS_MANAGER);
+
+		// evaluate the role and reassign it
+		__setRole(operator, role, _evaluateBy(msg.sender, getRole(operator), role));
+	}
+
+	/**
 	 * @dev Sets the `assignedRole` role to the operator, logs both `requestedRole` and `actualRole`
 	 *
 	 * @dev Unsafe:
@@ -390,7 +425,7 @@ abstract contract InitializableAccessControlCore is Initializable {
 		userRoles[operator] = assignedRole;
 
 		// fire an event
-		emit RoleUpdated(operator, requestedRole, assignedRole);
+		emit RoleUpdated(msg.sender, operator, requestedRole, assignedRole);
 	}
 
 	/**
