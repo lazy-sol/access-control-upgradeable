@@ -54,6 +54,9 @@ contract("UpgradeableAccessControl (U-RBAC) Core tests", function(accounts) {
 	it("it is impossible to re-initialize", async function() {
 		await expectRevert(ac.postConstruct(ZERO_ADDRESS, 0, {from: a0}), "Initializable: contract is already initialized");
 	});
+	it("it is impossible to postConstruct non-initializing", async function() {
+		await expectRevert(ac.postConstructNonInit(ZERO_ADDRESS, 0, {from: a0}), "Initializable: contract is not initializing");
+	});
 	describe("when there is new (v2) implementation available", function() {
 		let impl2;
 		beforeEach(async function() {

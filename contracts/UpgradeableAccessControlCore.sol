@@ -73,7 +73,7 @@ abstract contract UpgradeableAccessControlCore is InitializableAccessControlCore
 	 *
 	 * @return the current implementation address
 	 */
-	function getImplementation() public view virtual returns (address) {
+	function getImplementation() external view virtual returns (address) {
 		// delegate to `ERC1967Upgrade._getImplementation()`
 		return _getImplementation();
 	}
