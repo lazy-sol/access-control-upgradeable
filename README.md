@@ -223,7 +223,23 @@ Examples:
 [ERC20v1](https://raw.githubusercontent.com/vgorin/solidity-template/master/contracts/token/upgradeable/ERC20v1.sol),
 [ERC721v1](https://raw.githubusercontent.com/vgorin/solidity-template/master/contracts/token/upgradeable/ERC721v1.sol).
 
+## Evaluating Currently Enabled Features and Roles on the Deployed Contract
+
+1.  To evaluate currently enabled features use
+    * `features()` function, or
+    * `getRole(this)` function, replacing `this` with the deployed contract address
+2.  To evaluate currently enabled permissions for a **particular** address use
+    * `getRole(address)` function
+3.  To find **all** the addresses having any permissions, track the `RoleUpdated()` event and evaluate the history
+    of `assiged` roles for every `operator` address
+    * Alternatively, use the [tool](ui.html) which automates the process
+      (see demo [here](https://lazy-sol.github.io/access-control/ui.html))
+
 ## See Also
 [Role-based Access Control (RBAC)](https://github.com/lazy-sol/access-control/blob/master/README.md)
 
-(c) 2017–2024 Basil Gorin
+## Contributing
+Please see the [Contribution Guide](https://github.com/lazy-sol/access-control/blob/master/CONTRIBUTING.md) document to get understanding on how to report issues,
+contribute to the source code, fix bugs, introduce new features, etc.
+
+(c) 2017–2025 Basil Gorin
