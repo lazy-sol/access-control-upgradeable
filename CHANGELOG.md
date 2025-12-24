@@ -1,3 +1,6 @@
+v1.1.6: npm packages update
+- Updated outdated npm dependencies to the latest versions
+
 v1.1.5: npm packages update
 - Resolved 12 vulnerabilities (7 low, 1 high, 4 critical)
 - Improved .gitignore rules
